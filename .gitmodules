@@ -1,0 +1,10 @@
+[submodule "firmware/platforms/styx"]
+	path = firmware/platforms/styx
+	url = https://github.com/smar10s/styxsdr
+[submodule "firmware/extern/lib80211"]
+	path = firmware/extern/lib80211
+	url = https://github.com/smar10s/lib80211.git
+[submodule "firmware/platforms/deimos"]
+	path = firmware/platforms/deimos
+	url = https://github.com/smar10s/deimossdr
+	branch = main
