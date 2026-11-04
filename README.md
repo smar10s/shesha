@@ -212,6 +212,8 @@ Press `:` to enter command mode. Global commands and app names are always availa
 
 Configuration and UI state live in `$SHESHA_CONFIG_DIR/config.json` if set, else `$XDG_CONFIG_HOME/shesha/config.json`, else `~/.config/shesha/config.json`. You can edit this by hand or with the `set` command: `:set key value`. `get` returns the current value.
 
+Change theme with `:theme`.
+
 You can see all available config options, keys and commands for a given app using `:help` or pressing `?`. This also shows the global options still available.
 
 The client will automatically try to connect to a running daemon on 192.168.2.1:5555. Use `:daemon` for daemon control, or `:connect` to automatically deploy, start and connect as needed. The TUI's deploy commands run the repo Makefile, so install the client editable (`cd client && pip install -e .`) from a source checkout.
@@ -232,10 +234,13 @@ Shows radio and daemon state.
 
 ### Viz
 
+#### viz:waterfall
+
 `:viz waterfall`
 
 ![waterfall](docs/images/waterfall.png)
 
+#### viz:const
 `:viz const`
 
 ![constellation](docs/images/const.png)
@@ -248,10 +253,13 @@ In the WiFi app, `:record [--eapol] [file]` writes a PCAP; `--eapol` keeps only 
 
 `:tx` currently supports beacons and arbitrary frames, e.g. `:tx beacon hacktheplanet`.
 
+#### wifi:scan
 `:wifi scan`
 Scans for APs and STAs on the selected channel. 's' to cycle through channels automatically. Set dwell time with `wifi.scan.dwell`. If using deimos, `:fpga on|off` to toggle hardware vs software decoder.
 
 ![wifi scanner](docs/images/wifi-scan.redacted.png)
+
+#### wifi:traffic
 
 `:wifi traffic`
 Shows all traffic on the selected channel by type.
@@ -260,10 +268,14 @@ Shows all traffic on the selected channel by type.
 
 ### FM
 
+#### fm:rx
+
 `:fm rx`
 FM receiver. Coarse 1 MHz tune with regular keys, `[`/`]` for finer control.
 
 ![fm receiver](docs/images/fm-rx.png)
+
+#### fm:tx
 
 `:fm tx`
 FM transmitter with playlist support. Add files or folders with `:fm tx foo.mp3`. Enter to play/stop, space to pause. Supports RDS (`:fm rds on|off`; set a station ID first with `:fm rds pi <hex>`) and ID3-derived RDS (`:set fm.tx.rds.from_id3 true` with RDS on).
@@ -276,9 +288,8 @@ You are responsible for your transmitter. Be nice and pay attention.
 
 ## License
 
-The original source in this repository is MIT. The OUI vendor table in
-`client/shesha/oui.py` is generated from Wireshark's GPL-2.0-or-later
-manuf data and is included under that license; the rest of the client
-remains MIT. See [LICENSE](LICENSE).
+The original source in this repository is MIT.
+
+The OUI vendor table in `client/shesha/oui.py` is generated from Wireshark's GPL-2.0-or-later manuf data and is included under that license; the rest of the client remains MIT. See [LICENSE](LICENSE).
 
 The daemon links FFTW, which is GPL-2.0-or-later (or commercially licensed). Distributed binaries that include FFTW are therefore GPL-2.0-or-later. The source for those binaries is this repository, and FFTW's source is available from https://fftw.org/. FFTW is dual-licensed by MIT (the university); this build uses the GPL option.
