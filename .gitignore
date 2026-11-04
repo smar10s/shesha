@@ -1,0 +1,16 @@
+build*/
+*.o
+__pycache__/
+*.egg-info/
+.venv/
+snapshots/
+.opencode/
+.DS_Store
+config.json
+.envrc
+TODO.md
+STATUS.md
+AGENTS.md
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

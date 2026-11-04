@@ -1,0 +1,18 @@
+[project]
+name = "shesha"
+version = "0.2.0"
+description = "Headless client and TUI for the Shesha SDR daemon"
+readme = {text = "Shesha headless client. See the repository README for installation, modes, and examples.", content-type = "text/markdown"}
+requires-python = ">=3.12"
+license = {text = "MIT"}
+dependencies = []
+
+[project.optional-dependencies]
+waterfall = ["pygame>=2.1"]
+
+[project.scripts]
+shesha = "shesha:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
