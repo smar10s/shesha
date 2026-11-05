@@ -359,6 +359,7 @@ class Shell:
         if app is not None and app.active_view is not None:
             self._apply_view_mode(app.active_view)
         self._relayout()
+        self._sync_daemon_anim()
 
     def _deactivate_current_view(self) -> None:
         """Call on_exit() on the current app's active view before switching apps."""
@@ -539,7 +540,7 @@ class Shell:
         Idle and connected -> slow throb.  Idle and disconnected -> no
         animation, the glyph sits at steady warn.  See docs/tui.md.
         """
-        if self.daemon.busy:
+        if self._lifecycle_active is not None or self.daemon.busy:
             self._animator.pulse('daemon', frequency=2.5, min_val=0.3, max_val=1.0)
         elif self.daemon.connected:
             self._animator.pulse('daemon', frequency=0.5, min_val=0.3, max_val=1.0)
@@ -968,6 +969,7 @@ class Shell:
             self._problem(f'daemon: {self._lifecycle_active} in progress')
             return
         self._lifecycle_active = label
+        self._sync_daemon_anim()
         self._update_status_bar()
         threading.Thread(target=self._run_lifecycle, args=(work,),
                          daemon=True).start()
@@ -989,6 +991,7 @@ class Shell:
             self._install_daemon(daemon)
         if problem:
             self._problem(problem)
+        self._sync_daemon_anim()
         self._update_status_bar()
 
     def _run_connect(self, args: list[str]) -> None:

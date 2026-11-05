@@ -924,6 +924,50 @@ def test_daemon_start_installs_a_freshly_launched_daemon(monkeypatch):
         os.unlink(path)
 
 
+def test_installing_a_connected_daemon_starts_the_slow_throb():
+    """A daemon prepared off-thread reports no changes once installed.
+
+    Its connection events happened before it had a callback, so installing
+    it must sync the glyph explicitly or the link reads as a static colour.
+    """
+    shell, path = _make_shell()
+    try:
+        shell._animator.stop('daemon')
+        shell._install_daemon(DummyDaemon(shell.config))
+        assert shell._animator.running('daemon')
+        assert shell._animator._active['daemon'].frequency == 0.5
+    finally:
+        os.unlink(path)
+
+
+def test_failed_connect_leaves_the_glyph_at_steady_warn():
+    shell, path = _make_shell()
+    try:
+        assert shell._animator.running('daemon')
+        shell._finish_lifecycle(daemon=_FakeRemote(shell.config),
+                                problem='connect failed')
+        assert not shell._animator.running('daemon')
+        assert 'connect failed' in shell._result_message
+    finally:
+        os.unlink(path)
+
+
+def test_lifecycle_activity_pulses_fast_then_settles():
+    shell, path = _make_shell()
+    gate = threading.Event()
+    try:
+        assert shell._animator._active['daemon'].frequency == 0.5
+        shell._begin_lifecycle('connect', gate.wait)
+        assert shell._animator._active['daemon'].frequency == 2.5
+        gate.set()
+        shell._finish_lifecycle()
+        assert shell._lifecycle_active is None
+        assert shell._animator._active['daemon'].frequency == 0.5
+    finally:
+        gate.set()
+        os.unlink(path)
+
+
 def test_install_applies_the_active_view_mode():
     f = tempfile.NamedTemporaryFile(suffix='.json', delete=False, mode='w')
     json.dump({}, f)
