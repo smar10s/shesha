@@ -27,7 +27,12 @@ from tests.hardware.conftest import (
     PLUTO_HOST, PLUTO_PASS, PLUTO_PORT, PLUTO_USER, REPO_ROOT,
 )
 
-RX_LO_PATH = "/sys/bus/iio/devices/iio:device1/out_altvoltage0_RX_LO_frequency"
+# IIO numbers devices in probe order, which depends on the bitstream.
+# So the AD9361 is found by name on the Pluto, not by a fixed index.
+RX_LO_ATTR = "out_altvoltage0_RX_LO_frequency"
+AD9361_DIR_CMD = (
+    "dirname $(grep -lx ad9361-phy /sys/bus/iio/devices/iio:device*/name)"
+)
 SHUTDOWN_FREQ_HZ = 100_100_000
 SHUTDOWN_OFFSET_HZ = 100_000
 
@@ -346,7 +351,8 @@ def test_shutdown_clears_held_carrier():
         # Shift only the RX LO.  The TX LO, and therefore any held DAC
         # word, stays at SHUTDOWN_FREQ_HZ.
         assert _ssh(
-            f"echo {SHUTDOWN_FREQ_HZ + SHUTDOWN_OFFSET_HZ} > {RX_LO_PATH}"
+            f"echo {SHUTDOWN_FREQ_HZ + SHUTDOWN_OFFSET_HZ}"
+            f" > $({AD9361_DIR_CMD})/{RX_LO_ATTR}"
         ).returncode == 0, "could not offset the RX LO"
     finally:
         c.disconnect()
